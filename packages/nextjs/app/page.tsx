@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { AltarTable } from "./_components/AltarTable";
-import { RefillForm } from "./_components/RefillForm";
 import { SparkForm } from "./_components/SparkForm";
 import { Address } from "~~/components/scaffold-eth";
 import { useAltarEvents } from "~~/hooks/scaffold-eth/useAltarEvents";
@@ -14,6 +13,7 @@ import { NextPage } from "next";
 
 const Home: NextPage  = () => {
   const { address } = useAccount();
+  const { targetNetwork } = useTargetNetwork();
   const { data: altarContract } = useDeployedContractInfo({
     contractName: "Altar"
   });
@@ -21,24 +21,6 @@ const Home: NextPage  = () => {
   
   // Add this hook to check if user has called Spark
   const hasCalledSpark = balances.some(b => b.address === address);
-
-  // const [rpcUrl, setRpcUrl] = useState("");
-  // const [isEditing, setIsEditing] = useState(false);
-
-  // // Load RPC URL from localStorage on mount
-  // useEffect(() => {
-  //   const savedRpcUrl = localStorage.getItem("custom-rpc-url");
-  //   if (savedRpcUrl) setRpcUrl(savedRpcUrl);
-  // }, []);
-
-  // const handleRpcUpdate = () => {
-  //   if (rpcUrl) {
-  //     localStorage.setItem("custom-rpc-url", rpcUrl);
-  //     // Optionally force page reload to apply new RPC
-  //     window.location.reload();
-  //   }
-  //   setIsEditing(false);
-  // };
 
   return (
     <div className="container mx-auto mt-10 px-4">
@@ -49,48 +31,9 @@ const Home: NextPage  = () => {
           </a>
           <Address address={altarContract?.address} />
         </div>
-        
-        {/* RPC URL Input
-        <div className="mt-4 flex items-center justify-center gap-2">
-          {isEditing ? (
-            <>
-              <input
-                type="text"
-                value={rpcUrl}
-                onChange={(e) => setRpcUrl(e.target.value)}
-                placeholder="Enter RPC URL"
-                className="input input-bordered input-sm w-96"
-              />
-              <button 
-                onClick={handleRpcUpdate}
-                className="btn btn-sm btn-primary"
-              >
-                Save
-              </button>
-              <button 
-                onClick={() => setIsEditing(false)}
-                className="btn btn-sm btn-ghost"
-              >
-                Cancel
-              </button>
-            </>
-          ) : (
-            <div className="flex items-center gap-2">
-              <span className="text-sm opacity-50">
-                RPC: {rpcUrl ? `${rpcUrl.slice(0, 20)}...` : "Default"}
-              </span>
-              <button 
-                onClick={() => setIsEditing(true)}
-                className="btn btn-sm btn-ghost"
-              >
-                Edit
-              </button>
-            </div>
-          )}
-        </div> */}
       </div>
 
-      <div className="flex w-full gap-8 mb-8">
+      <div className="flex w-max gap-8 mb-8">
         <div className="card bg-base-100 shadow-xl w-max">
           <div className="card-body">
             <h2 className="card-title">
@@ -100,17 +43,11 @@ const Home: NextPage  = () => {
               <Dashboard 
                 address={address || ''} 
                 accountData={balances.find(b => b.address === address)}
+                targetNetwork={targetNetwork}
               />
             ) : (
               <SparkForm />
             )}
-          </div>
-        </div>
-
-        <div className="card bg-base-100 shadow-xl w-max">
-          <div className="card-body">
-            <h2 className="card-title">Refill</h2>
-            <RefillForm />
           </div>
         </div>
       </div>
@@ -120,7 +57,7 @@ const Home: NextPage  = () => {
         <div className="card-body">
           <AltarTable 
             balances={balances} 
-            // isLoading={isLoading} 
+            isLoading={isLoading} 
           />
         </div>
       </div>

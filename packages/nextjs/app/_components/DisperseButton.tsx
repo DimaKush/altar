@@ -1,5 +1,5 @@
 
 export function DisperseButton() {
-    return <a href="https://disperse.app/" target="_blank" rel="noopener noreferrer">TODO: Disperse</a>;
+    return <button onClick={()=>window.open("https://disperse.app/", '_blank')} className="btn btn-primary">Disperse</button>;
   }
   

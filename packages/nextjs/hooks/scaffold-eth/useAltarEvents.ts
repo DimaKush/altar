@@ -19,6 +19,7 @@ export interface CallerBalance {
   reserve1: number;
   price: number;
   priceImpact: number;
+  pairStreamId: number;
 }
 
 export const useAltarEvents = () => {
@@ -98,7 +99,7 @@ export const useAltarEvents = () => {
 
             const blesed = event.args.blesed as `0x${string}`;
             const blesToken = event.args.blesToken as `0x${string}`;
-
+            const pairStreamId = event.args.streamId ? Number(event.args.streamId) : 0;
             try {
               // Get basic balances first
               const [ethBalance, blesBalance, torchBalance] = await Promise.all([
@@ -170,6 +171,7 @@ export const useAltarEvents = () => {
                 reserve1,
                 price,
                 priceImpact,
+                pairStreamId,
               } as CallerBalance;
             } catch (error) {
               console.error("Error processing event:", { event, error });
