@@ -4,6 +4,1314 @@
  */
 import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 
-const deployedContracts = {} as const;
+const deployedContracts = {
+  1: {
+    Altar: {
+      address: "0x5D36d947ec045eF3e1143A9c57658D8dC1103a6d",
+      abi: [
+        {
+          type: "constructor",
+          inputs: [
+            {
+              name: "_daoMultisig",
+              type: "address",
+              internalType: "address",
+            },
+            {
+              name: "_factory",
+              type: "address",
+              internalType: "address",
+            },
+            {
+              name: "_router",
+              type: "address",
+              internalType: "address",
+            },
+            {
+              name: "_lockupLinear",
+              type: "address",
+              internalType: "address",
+            },
+            {
+              name: "_weth",
+              type: "address",
+              internalType: "address",
+            },
+          ],
+          stateMutability: "nonpayable",
+        },
+        {
+          type: "function",
+          name: "PHI",
+          inputs: [],
+          outputs: [
+            {
+              name: "",
+              type: "uint256",
+              internalType: "uint256",
+            },
+          ],
+          stateMutability: "view",
+        },
+        {
+          type: "function",
+          name: "SCALE",
+          inputs: [],
+          outputs: [
+            {
+              name: "",
+              type: "uint256",
+              internalType: "uint256",
+            },
+          ],
+          stateMutability: "view",
+        },
+        {
+          type: "function",
+          name: "blesToBlesed",
+          inputs: [
+            {
+              name: "",
+              type: "address",
+              internalType: "address",
+            },
+          ],
+          outputs: [
+            {
+              name: "",
+              type: "address",
+              internalType: "address",
+            },
+          ],
+          stateMutability: "view",
+        },
+        {
+          type: "function",
+          name: "blesedToBles",
+          inputs: [
+            {
+              name: "",
+              type: "address",
+              internalType: "address",
+            },
+          ],
+          outputs: [
+            {
+              name: "",
+              type: "address",
+              internalType: "address",
+            },
+          ],
+          stateMutability: "view",
+        },
+        {
+          type: "function",
+          name: "daoMultisig",
+          inputs: [],
+          outputs: [
+            {
+              name: "",
+              type: "address",
+              internalType: "address",
+            },
+          ],
+          stateMutability: "view",
+        },
+        {
+          type: "function",
+          name: "factory",
+          inputs: [],
+          outputs: [
+            {
+              name: "",
+              type: "address",
+              internalType: "contract IUniswapV2Factory",
+            },
+          ],
+          stateMutability: "view",
+        },
+        {
+          type: "function",
+          name: "link",
+          inputs: [],
+          outputs: [
+            {
+              name: "",
+              type: "string",
+              internalType: "string",
+            },
+          ],
+          stateMutability: "view",
+        },
+        {
+          type: "function",
+          name: "lockupLinear",
+          inputs: [],
+          outputs: [
+            {
+              name: "",
+              type: "address",
+              internalType: "contract ISablierV2LockupLinear",
+            },
+          ],
+          stateMutability: "view",
+        },
+        {
+          type: "function",
+          name: "refill",
+          inputs: [
+            {
+              name: "amount",
+              type: "uint256",
+              internalType: "uint256",
+            },
+          ],
+          outputs: [],
+          stateMutability: "nonpayable",
+        },
+        {
+          type: "function",
+          name: "router",
+          inputs: [],
+          outputs: [
+            {
+              name: "",
+              type: "address",
+              internalType: "contract IUniswapV2Router02",
+            },
+          ],
+          stateMutability: "view",
+        },
+        {
+          type: "function",
+          name: "spark",
+          inputs: [
+            {
+              name: "_division",
+              type: "uint256",
+              internalType: "uint256",
+            },
+            {
+              name: "_referral",
+              type: "address",
+              internalType: "address",
+            },
+          ],
+          outputs: [],
+          stateMutability: "payable",
+        },
+        {
+          type: "function",
+          name: "weth",
+          inputs: [],
+          outputs: [
+            {
+              name: "",
+              type: "address",
+              internalType: "contract IERC20",
+            },
+          ],
+          stateMutability: "view",
+        },
+        {
+          type: "event",
+          name: "Blesed",
+          inputs: [
+            {
+              name: "blesed",
+              type: "address",
+              indexed: true,
+              internalType: "address",
+            },
+            {
+              name: "blesToken",
+              type: "address",
+              indexed: true,
+              internalType: "address",
+            },
+            {
+              name: "blesAmount",
+              type: "uint256",
+              indexed: false,
+              internalType: "uint256",
+            },
+            {
+              name: "torchAmount",
+              type: "uint256",
+              indexed: false,
+              internalType: "uint256",
+            },
+            {
+              name: "liquidity",
+              type: "uint256",
+              indexed: false,
+              internalType: "uint256",
+            },
+            {
+              name: "streamId",
+              type: "uint256",
+              indexed: false,
+              internalType: "uint256",
+            },
+            {
+              name: "referral",
+              type: "address",
+              indexed: false,
+              internalType: "address",
+            },
+            {
+              name: "referralAmount",
+              type: "uint256",
+              indexed: false,
+              internalType: "uint256",
+            },
+          ],
+          anonymous: false,
+        },
+        {
+          type: "event",
+          name: "Refilled",
+          inputs: [
+            {
+              name: "refiller",
+              type: "address",
+              indexed: true,
+              internalType: "address",
+            },
+            {
+              name: "amount",
+              type: "uint256",
+              indexed: false,
+              internalType: "uint256",
+            },
+            {
+              name: "ethAmount",
+              type: "uint256",
+              indexed: false,
+              internalType: "uint256",
+            },
+          ],
+          anonymous: false,
+        },
+        {
+          type: "error",
+          name: "BlesedAlready",
+          inputs: [],
+        },
+        {
+          type: "error",
+          name: "DivisionOutOfRange",
+          inputs: [],
+        },
+        {
+          type: "error",
+          name: "EthAmountError",
+          inputs: [],
+        },
+        {
+          type: "error",
+          name: "EthAmountOutOfRange",
+          inputs: [],
+        },
+        {
+          type: "error",
+          name: "Locked",
+          inputs: [],
+        },
+        {
+          type: "error",
+          name: "NotRefiller",
+          inputs: [],
+        },
+        {
+          type: "error",
+          name: "TransferFailed",
+          inputs: [],
+        },
+        {
+          type: "error",
+          name: "ZeroAddress",
+          inputs: [],
+        },
+        {
+          type: "error",
+          name: "ZeroAmount",
+          inputs: [],
+        },
+      ],
+      inheritedFunctions: {},
+      deploymentFile: "run-1737893021.json",
+      deploymentScript: "Deploy.s.sol",
+    },
+  },
+  31337: {
+    Altar: {
+      address: "0x700b6a60ce7eaaea56f065753d8dcb9653dbad35",
+      abi: [
+        {
+          type: "constructor",
+          inputs: [
+            {
+              name: "_daoMultisig",
+              type: "address",
+              internalType: "address",
+            },
+            {
+              name: "_factory",
+              type: "address",
+              internalType: "address",
+            },
+            {
+              name: "_router",
+              type: "address",
+              internalType: "address",
+            },
+            {
+              name: "_lockupLinear",
+              type: "address",
+              internalType: "address",
+            },
+            {
+              name: "_weth",
+              type: "address",
+              internalType: "address",
+            },
+          ],
+          stateMutability: "nonpayable",
+        },
+        {
+          type: "function",
+          name: "PHI",
+          inputs: [],
+          outputs: [
+            {
+              name: "",
+              type: "uint256",
+              internalType: "uint256",
+            },
+          ],
+          stateMutability: "view",
+        },
+        {
+          type: "function",
+          name: "SCALE",
+          inputs: [],
+          outputs: [
+            {
+              name: "",
+              type: "uint256",
+              internalType: "uint256",
+            },
+          ],
+          stateMutability: "view",
+        },
+        {
+          type: "function",
+          name: "blesToBlesed",
+          inputs: [
+            {
+              name: "",
+              type: "address",
+              internalType: "address",
+            },
+          ],
+          outputs: [
+            {
+              name: "",
+              type: "address",
+              internalType: "address",
+            },
+          ],
+          stateMutability: "view",
+        },
+        {
+          type: "function",
+          name: "blesedToBles",
+          inputs: [
+            {
+              name: "",
+              type: "address",
+              internalType: "address",
+            },
+          ],
+          outputs: [
+            {
+              name: "",
+              type: "address",
+              internalType: "address",
+            },
+          ],
+          stateMutability: "view",
+        },
+        {
+          type: "function",
+          name: "daoMultisig",
+          inputs: [],
+          outputs: [
+            {
+              name: "",
+              type: "address",
+              internalType: "address",
+            },
+          ],
+          stateMutability: "view",
+        },
+        {
+          type: "function",
+          name: "factory",
+          inputs: [],
+          outputs: [
+            {
+              name: "",
+              type: "address",
+              internalType: "contract IUniswapV2Factory",
+            },
+          ],
+          stateMutability: "view",
+        },
+        {
+          type: "function",
+          name: "link",
+          inputs: [],
+          outputs: [
+            {
+              name: "",
+              type: "string",
+              internalType: "string",
+            },
+          ],
+          stateMutability: "view",
+        },
+        {
+          type: "function",
+          name: "lockupLinear",
+          inputs: [],
+          outputs: [
+            {
+              name: "",
+              type: "address",
+              internalType: "contract ISablierV2LockupLinear",
+            },
+          ],
+          stateMutability: "view",
+        },
+        {
+          type: "function",
+          name: "refill",
+          inputs: [
+            {
+              name: "amount",
+              type: "uint256",
+              internalType: "uint256",
+            },
+          ],
+          outputs: [],
+          stateMutability: "nonpayable",
+        },
+        {
+          type: "function",
+          name: "router",
+          inputs: [],
+          outputs: [
+            {
+              name: "",
+              type: "address",
+              internalType: "contract IUniswapV2Router02",
+            },
+          ],
+          stateMutability: "view",
+        },
+        {
+          type: "function",
+          name: "spark",
+          inputs: [
+            {
+              name: "_division",
+              type: "uint256",
+              internalType: "uint256",
+            },
+            {
+              name: "_referral",
+              type: "address",
+              internalType: "address",
+            },
+          ],
+          outputs: [],
+          stateMutability: "payable",
+        },
+        {
+          type: "function",
+          name: "weth",
+          inputs: [],
+          outputs: [
+            {
+              name: "",
+              type: "address",
+              internalType: "contract IERC20",
+            },
+          ],
+          stateMutability: "view",
+        },
+        {
+          type: "event",
+          name: "Blesed",
+          inputs: [
+            {
+              name: "blesed",
+              type: "address",
+              indexed: true,
+              internalType: "address",
+            },
+            {
+              name: "blesToken",
+              type: "address",
+              indexed: true,
+              internalType: "address",
+            },
+            {
+              name: "blesAmount",
+              type: "uint256",
+              indexed: false,
+              internalType: "uint256",
+            },
+            {
+              name: "torchAmount",
+              type: "uint256",
+              indexed: false,
+              internalType: "uint256",
+            },
+            {
+              name: "liquidity",
+              type: "uint256",
+              indexed: false,
+              internalType: "uint256",
+            },
+            {
+              name: "streamId",
+              type: "uint256",
+              indexed: false,
+              internalType: "uint256",
+            },
+            {
+              name: "referral",
+              type: "address",
+              indexed: false,
+              internalType: "address",
+            },
+            {
+              name: "referralAmount",
+              type: "uint256",
+              indexed: false,
+              internalType: "uint256",
+            },
+          ],
+          anonymous: false,
+        },
+        {
+          type: "event",
+          name: "Refilled",
+          inputs: [
+            {
+              name: "refiller",
+              type: "address",
+              indexed: true,
+              internalType: "address",
+            },
+            {
+              name: "amount",
+              type: "uint256",
+              indexed: false,
+              internalType: "uint256",
+            },
+            {
+              name: "ethAmount",
+              type: "uint256",
+              indexed: false,
+              internalType: "uint256",
+            },
+          ],
+          anonymous: false,
+        },
+        {
+          type: "error",
+          name: "BlesedAlready",
+          inputs: [],
+        },
+        {
+          type: "error",
+          name: "DivisionOutOfRange",
+          inputs: [],
+        },
+        {
+          type: "error",
+          name: "EthAmountError",
+          inputs: [],
+        },
+        {
+          type: "error",
+          name: "EthAmountOutOfRange",
+          inputs: [],
+        },
+        {
+          type: "error",
+          name: "Locked",
+          inputs: [],
+        },
+        {
+          type: "error",
+          name: "NotRefiller",
+          inputs: [],
+        },
+        {
+          type: "error",
+          name: "TransferFailed",
+          inputs: [],
+        },
+        {
+          type: "error",
+          name: "ZeroAddress",
+          inputs: [],
+        },
+        {
+          type: "error",
+          name: "ZeroAmount",
+          inputs: [],
+        },
+      ],
+      inheritedFunctions: {},
+      deploymentFile: "run-1737892721.json",
+      deploymentScript: "Deploy.s.sol",
+    },
+    YourContract: {
+      address: "0x12975173b87f7595ee45dffb2ab812ece596bf84",
+      abi: [
+        {
+          type: "constructor",
+          inputs: [
+            {
+              name: "_owner",
+              type: "address",
+              internalType: "address",
+            },
+          ],
+          stateMutability: "nonpayable",
+        },
+        {
+          type: "receive",
+          stateMutability: "payable",
+        },
+        {
+          type: "function",
+          name: "greeting",
+          inputs: [],
+          outputs: [
+            {
+              name: "",
+              type: "string",
+              internalType: "string",
+            },
+          ],
+          stateMutability: "view",
+        },
+        {
+          type: "function",
+          name: "owner",
+          inputs: [],
+          outputs: [
+            {
+              name: "",
+              type: "address",
+              internalType: "address",
+            },
+          ],
+          stateMutability: "view",
+        },
+        {
+          type: "function",
+          name: "premium",
+          inputs: [],
+          outputs: [
+            {
+              name: "",
+              type: "bool",
+              internalType: "bool",
+            },
+          ],
+          stateMutability: "view",
+        },
+        {
+          type: "function",
+          name: "setGreeting",
+          inputs: [
+            {
+              name: "_newGreeting",
+              type: "string",
+              internalType: "string",
+            },
+          ],
+          outputs: [],
+          stateMutability: "payable",
+        },
+        {
+          type: "function",
+          name: "totalCounter",
+          inputs: [],
+          outputs: [
+            {
+              name: "",
+              type: "uint256",
+              internalType: "uint256",
+            },
+          ],
+          stateMutability: "view",
+        },
+        {
+          type: "function",
+          name: "userGreetingCounter",
+          inputs: [
+            {
+              name: "",
+              type: "address",
+              internalType: "address",
+            },
+          ],
+          outputs: [
+            {
+              name: "",
+              type: "uint256",
+              internalType: "uint256",
+            },
+          ],
+          stateMutability: "view",
+        },
+        {
+          type: "function",
+          name: "withdraw",
+          inputs: [],
+          outputs: [],
+          stateMutability: "nonpayable",
+        },
+        {
+          type: "event",
+          name: "GreetingChange",
+          inputs: [
+            {
+              name: "greetingSetter",
+              type: "address",
+              indexed: true,
+              internalType: "address",
+            },
+            {
+              name: "newGreeting",
+              type: "string",
+              indexed: false,
+              internalType: "string",
+            },
+            {
+              name: "premium",
+              type: "bool",
+              indexed: false,
+              internalType: "bool",
+            },
+            {
+              name: "value",
+              type: "uint256",
+              indexed: false,
+              internalType: "uint256",
+            },
+          ],
+          anonymous: false,
+        },
+      ],
+      inheritedFunctions: {},
+      deploymentFile: "run-1737903356.json",
+      deploymentScript: "Deploy.s.sol",
+    },
+  },
+  11155111: {
+    YourContract: {
+      address: "0x82f7771df332de41993d795e3c71a32d22469b40",
+      abi: [
+        {
+          type: "constructor",
+          inputs: [
+            {
+              name: "_owner",
+              type: "address",
+              internalType: "address",
+            },
+          ],
+          stateMutability: "nonpayable",
+        },
+        {
+          type: "receive",
+          stateMutability: "payable",
+        },
+        {
+          type: "function",
+          name: "greeting",
+          inputs: [],
+          outputs: [
+            {
+              name: "",
+              type: "string",
+              internalType: "string",
+            },
+          ],
+          stateMutability: "view",
+        },
+        {
+          type: "function",
+          name: "owner",
+          inputs: [],
+          outputs: [
+            {
+              name: "",
+              type: "address",
+              internalType: "address",
+            },
+          ],
+          stateMutability: "view",
+        },
+        {
+          type: "function",
+          name: "premium",
+          inputs: [],
+          outputs: [
+            {
+              name: "",
+              type: "bool",
+              internalType: "bool",
+            },
+          ],
+          stateMutability: "view",
+        },
+        {
+          type: "function",
+          name: "setGreeting",
+          inputs: [
+            {
+              name: "_newGreeting",
+              type: "string",
+              internalType: "string",
+            },
+          ],
+          outputs: [],
+          stateMutability: "payable",
+        },
+        {
+          type: "function",
+          name: "totalCounter",
+          inputs: [],
+          outputs: [
+            {
+              name: "",
+              type: "uint256",
+              internalType: "uint256",
+            },
+          ],
+          stateMutability: "view",
+        },
+        {
+          type: "function",
+          name: "userGreetingCounter",
+          inputs: [
+            {
+              name: "",
+              type: "address",
+              internalType: "address",
+            },
+          ],
+          outputs: [
+            {
+              name: "",
+              type: "uint256",
+              internalType: "uint256",
+            },
+          ],
+          stateMutability: "view",
+        },
+        {
+          type: "function",
+          name: "withdraw",
+          inputs: [],
+          outputs: [],
+          stateMutability: "nonpayable",
+        },
+        {
+          type: "event",
+          name: "GreetingChange",
+          inputs: [
+            {
+              name: "greetingSetter",
+              type: "address",
+              indexed: true,
+              internalType: "address",
+            },
+            {
+              name: "newGreeting",
+              type: "string",
+              indexed: false,
+              internalType: "string",
+            },
+            {
+              name: "premium",
+              type: "bool",
+              indexed: false,
+              internalType: "bool",
+            },
+            {
+              name: "value",
+              type: "uint256",
+              indexed: false,
+              internalType: "uint256",
+            },
+          ],
+          anonymous: false,
+        },
+      ],
+      inheritedFunctions: {},
+      deploymentFile: "run-1738075753.json",
+      deploymentScript: "Deploy.s.sol",
+    },
+    Altar: {
+      address: "0x5d3aa5c55388665e6dcb371c34decb7096cda221",
+      abi: [
+        {
+          type: "constructor",
+          inputs: [
+            {
+              name: "_daoMultisig",
+              type: "address",
+              internalType: "address",
+            },
+            {
+              name: "_factory",
+              type: "address",
+              internalType: "address",
+            },
+            {
+              name: "_router",
+              type: "address",
+              internalType: "address",
+            },
+            {
+              name: "_lockupLinear",
+              type: "address",
+              internalType: "address",
+            },
+            {
+              name: "_weth",
+              type: "address",
+              internalType: "address",
+            },
+          ],
+          stateMutability: "nonpayable",
+        },
+        {
+          type: "function",
+          name: "PHI",
+          inputs: [],
+          outputs: [
+            {
+              name: "",
+              type: "uint256",
+              internalType: "uint256",
+            },
+          ],
+          stateMutability: "view",
+        },
+        {
+          type: "function",
+          name: "SCALE",
+          inputs: [],
+          outputs: [
+            {
+              name: "",
+              type: "uint256",
+              internalType: "uint256",
+            },
+          ],
+          stateMutability: "view",
+        },
+        {
+          type: "function",
+          name: "blesToBlesed",
+          inputs: [
+            {
+              name: "",
+              type: "address",
+              internalType: "address",
+            },
+          ],
+          outputs: [
+            {
+              name: "",
+              type: "address",
+              internalType: "address",
+            },
+          ],
+          stateMutability: "view",
+        },
+        {
+          type: "function",
+          name: "blesedToBles",
+          inputs: [
+            {
+              name: "",
+              type: "address",
+              internalType: "address",
+            },
+          ],
+          outputs: [
+            {
+              name: "",
+              type: "address",
+              internalType: "address",
+            },
+          ],
+          stateMutability: "view",
+        },
+        {
+          type: "function",
+          name: "daoMultisig",
+          inputs: [],
+          outputs: [
+            {
+              name: "",
+              type: "address",
+              internalType: "address",
+            },
+          ],
+          stateMutability: "view",
+        },
+        {
+          type: "function",
+          name: "factory",
+          inputs: [],
+          outputs: [
+            {
+              name: "",
+              type: "address",
+              internalType: "contract IUniswapV2Factory",
+            },
+          ],
+          stateMutability: "view",
+        },
+        {
+          type: "function",
+          name: "link",
+          inputs: [],
+          outputs: [
+            {
+              name: "",
+              type: "string",
+              internalType: "string",
+            },
+          ],
+          stateMutability: "view",
+        },
+        {
+          type: "function",
+          name: "lockupLinear",
+          inputs: [],
+          outputs: [
+            {
+              name: "",
+              type: "address",
+              internalType: "contract ISablierV2LockupLinear",
+            },
+          ],
+          stateMutability: "view",
+        },
+        {
+          type: "function",
+          name: "refill",
+          inputs: [
+            {
+              name: "amount",
+              type: "uint256",
+              internalType: "uint256",
+            },
+          ],
+          outputs: [],
+          stateMutability: "nonpayable",
+        },
+        {
+          type: "function",
+          name: "router",
+          inputs: [],
+          outputs: [
+            {
+              name: "",
+              type: "address",
+              internalType: "contract IUniswapV2Router02",
+            },
+          ],
+          stateMutability: "view",
+        },
+        {
+          type: "function",
+          name: "spark",
+          inputs: [
+            {
+              name: "_division",
+              type: "uint256",
+              internalType: "uint256",
+            },
+            {
+              name: "_referral",
+              type: "address",
+              internalType: "address",
+            },
+          ],
+          outputs: [],
+          stateMutability: "payable",
+        },
+        {
+          type: "function",
+          name: "weth",
+          inputs: [],
+          outputs: [
+            {
+              name: "",
+              type: "address",
+              internalType: "contract IERC20",
+            },
+          ],
+          stateMutability: "view",
+        },
+        {
+          type: "event",
+          name: "Blesed",
+          inputs: [
+            {
+              name: "blesed",
+              type: "address",
+              indexed: true,
+              internalType: "address",
+            },
+            {
+              name: "blesToken",
+              type: "address",
+              indexed: true,
+              internalType: "address",
+            },
+            {
+              name: "blesAmount",
+              type: "uint256",
+              indexed: false,
+              internalType: "uint256",
+            },
+            {
+              name: "torchAmount",
+              type: "uint256",
+              indexed: false,
+              internalType: "uint256",
+            },
+            {
+              name: "liquidity",
+              type: "uint256",
+              indexed: false,
+              internalType: "uint256",
+            },
+            {
+              name: "streamId",
+              type: "uint256",
+              indexed: false,
+              internalType: "uint256",
+            },
+            {
+              name: "referral",
+              type: "address",
+              indexed: false,
+              internalType: "address",
+            },
+            {
+              name: "referralAmount",
+              type: "uint256",
+              indexed: false,
+              internalType: "uint256",
+            },
+          ],
+          anonymous: false,
+        },
+        {
+          type: "event",
+          name: "Refilled",
+          inputs: [
+            {
+              name: "refiller",
+              type: "address",
+              indexed: true,
+              internalType: "address",
+            },
+            {
+              name: "amount",
+              type: "uint256",
+              indexed: false,
+              internalType: "uint256",
+            },
+            {
+              name: "ethAmount",
+              type: "uint256",
+              indexed: false,
+              internalType: "uint256",
+            },
+          ],
+          anonymous: false,
+        },
+        {
+          type: "error",
+          name: "BlesedAlready",
+          inputs: [],
+        },
+        {
+          type: "error",
+          name: "DivisionOutOfRange",
+          inputs: [],
+        },
+        {
+          type: "error",
+          name: "EthAmountError",
+          inputs: [],
+        },
+        {
+          type: "error",
+          name: "EthAmountOutOfRange",
+          inputs: [],
+        },
+        {
+          type: "error",
+          name: "Locked",
+          inputs: [],
+        },
+        {
+          type: "error",
+          name: "NotRefiller",
+          inputs: [],
+        },
+        {
+          type: "error",
+          name: "TransferFailed",
+          inputs: [],
+        },
+        {
+          type: "error",
+          name: "ZeroAddress",
+          inputs: [],
+        },
+        {
+          type: "error",
+          name: "ZeroAmount",
+          inputs: [],
+        },
+      ],
+      inheritedFunctions: {},
+      deploymentFile: "run-1738077313.json",
+      deploymentScript: "Deploy.s.sol",
+    },
+  },
+} as const;
 
 export default deployedContracts satisfies GenericContractsDeclaration;

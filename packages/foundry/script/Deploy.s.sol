@@ -2,6 +2,7 @@
 pragma solidity ^0.8.19;
 
 import "./DeployHelpers.s.sol";
+import { DeployAltar } from "./DeployAltar.s.sol";
 import { DeployYourContract } from "./DeployYourContract.s.sol";
 
 /**
@@ -15,7 +16,8 @@ contract DeployScript is ScaffoldETHDeploy {
         // Deploys all your contracts sequentially
         // Add new deployments here when needed
 
-        DeployYourContract deployYourContract = new DeployYourContract();
+        // DeployAltar deployYourContract = new DeployAltar();
+        DeployAltar deployYourContract = new DeployAltar();
         deployYourContract.run();
 
         // Deploy another contract

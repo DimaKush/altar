@@ -3,7 +3,12 @@ src = 'contracts'
 out = 'out'
 libs = ['lib']
 fs_permissions = [{ access = "read-write", path = "./"}]
-
+remappings = [
+    "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/",
+    "@sablier/v2-core/=lib/v2-core/",
+    "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/",
+    "@prb/math/=lib/prb-math/",
+]
 
 [rpc_endpoints]
 default_network = "http://127.0.0.1:8545"
@@ -32,7 +37,6 @@ pgnTestnet = "https://sepolia.publicgoods.network"
 [etherscan]
 polygonMumbai = { key = "${ETHERSCAN_API_KEY}" }
 sepolia = { key = "${ETHERSCAN_API_KEY}" }
-
 
 
 [fmt]
