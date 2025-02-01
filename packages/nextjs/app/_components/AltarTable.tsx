@@ -57,6 +57,7 @@ export const AltarTable = ({ balances, connectedAddress, isLoading }: AltarTable
               <tr key={index} className="border-b border-base-200 last:border-none">
                 <td className="w-1/3 py-6">
                   <div className="flex flex-col gap-3">
+                  <Address address={balance.address}/>
                     <table className="table-auto w-full text-xs">
                       <thead>
                         <tr className="text-base-content/50">
