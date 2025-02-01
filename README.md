@@ -216,10 +216,17 @@ The refill function allows any user to:
 
 ### Setup
 
+
 ```bash
 git clone https://github.com/DimaKush/Altar.git
 cd altar
-forge install --no-commit sablier-labs/v2-core OpenZeppelin/openzeppelin-contracts@v5.0.2 PaulRBerg/prb-math@v4.0.3 foundry-rs/forge-std
+yarn install
+```
+
+add to altar/packages/nextjs/.env
+```
+NEXT_PUBLIC_ALCHEMY_API_KEY=yourKey
+NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID=yourProjectId
 ```
 
 ### Testing
@@ -228,13 +235,16 @@ forge install --no-commit sablier-labs/v2-core OpenZeppelin/openzeppelin-contrac
 # Fork mainnet
 anvil --fork-url $ETH_RPC_URL
 
+# Install dependencies
+cd packages/founry
+forge install --no-commit sablier-labs/v2-core OpenZeppelin/openzeppelin-contracts@v5.0.2 PaulRBerg/prb-math@v4.0.3 foundry-rs/forge-std
+
 # Run tests
 forge test --rpc-url http://localhost:8545
 
 # Run app
-cd app
-npm install
-npm run start
+yarn install
+yarn start
 ```
 
 ## Troubleshooting

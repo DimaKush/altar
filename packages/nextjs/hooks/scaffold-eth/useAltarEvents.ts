@@ -32,7 +32,7 @@ export const useAltarEvents = () => {
   const torchContract = contractsData.TORCH;
 
 
-  const fromBlock = targetNetwork.id === 11155111 ? BigInt(process.env.NEXT_PUBLIC_FROM_BLOCK_SEPOLIA || 7589485) : BigInt(21599730);
+  const fromBlock = targetNetwork.id === 11155111 ? BigInt(7589485) : BigInt(21599730);
   const { data: events, isLoading: isLoadingEvents } = useScaffoldEventHistory({
     contractName: "Altar",
     eventName: "Blesed",
