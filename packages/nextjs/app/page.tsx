@@ -11,7 +11,7 @@ import { useAccount } from 'wagmi';
 import { Dashboard } from "./_components/Dashboard";
 import { NextPage } from "next";
 
-const Home: NextPage  = () => {
+const Home: NextPage = () => {
   const { address } = useAccount();
   const { targetNetwork } = useTargetNetwork();
   const { data: altarContract } = useDeployedContractInfo({
@@ -22,26 +22,43 @@ const Home: NextPage  = () => {
   // Add this hook to check if user has called Spark
   const hasCalledSpark = balances.some(b => b.address === address);
 
+  const introText = `
+Altar Protocol
+
+Overview
+A protocol for creating personalized ERC20 tokens with automated liquidity provision and locking.
+
+Features
+• Multi-chain liquidity management
+• Automated rebalancing (coming soon)
+• Cross-chain bridging (coming soon)
+• Multiple DEX support (coming soon)
+
+Getting Started
+1. Connect your wallet
+2. Spark your stream
+3. Manage your liquidity
+  `;
+  
   return (
     <div className="container mx-auto mt-10 px-4">
       <div className="text-center mb-8">
-        <div>
-          <a href="https://github.com/DimaKush/altar">
-            <h1 className="text-4xl font-bold mb-6">Altar</h1>
-          </a>
+        <div className="flex justify-center gap-8">
+            <h1 className="text-4xl font-bold">Altar</h1>
           <Address address={altarContract?.address} />
         </div>
       </div>
 
-      <div className="flex w-max gap-8 mb-8">
+      <div className="flex justify-center gap-8">
         <div className="card bg-base-100 shadow-xl w-max">
           <div className="card-body">
-            <h2 className="card-title">
-              {hasCalledSpark ? "TODO: Dashboard" : "TODO: Spark"}
-            </h2>
-            {hasCalledSpark ? (
+            {!address ? (
+              <div className="whitespace-pre-line">
+                {introText}
+              </div>
+            ) : hasCalledSpark ? (
               <Dashboard 
-                address={address || ''} 
+                address={address} 
                 accountData={balances.find(b => b.address === address)}
                 targetNetwork={targetNetwork}
               />
@@ -51,16 +68,20 @@ const Home: NextPage  = () => {
           </div>
         </div>
       </div>
-      <div>TODO: Holders</div>
-      <div>TODO: Fetch Dune Analytics</div>
-      <div className="card bg-base-100 shadow-xl">
-        <div className="card-body">
-          <AltarTable 
+      
+      {address && (
+        <>
+          <div className="card bg-base-100 shadow-xl mt-4">
+            <div className="card-body">
+            <AltarTable 
             balances={balances} 
+            connectedAddress={address}
             isLoading={isLoading} 
           />
-        </div>
-      </div>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 };

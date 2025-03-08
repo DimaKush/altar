@@ -9,7 +9,7 @@ export const RefillButton = () => {
   return (
     <>
       <button 
-        className="btn btn-primary" 
+        className="btn btn-sm w-32 btn-outline" 
         onClick={() => setIsOpen(true)}
       >
         Refill
@@ -22,7 +22,7 @@ export const RefillButton = () => {
             <RefillForm />
             <div className="modal-action">
               <button 
-                className="btn" 
+                className="btn btn-sm w-32 btn-outline" 
                 onClick={() => setIsOpen(false)}
               >
                 Close

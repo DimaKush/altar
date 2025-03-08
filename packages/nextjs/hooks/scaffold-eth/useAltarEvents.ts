@@ -20,6 +20,8 @@ export interface CallerBalance {
   price: number;
   priceImpact: number;
   pairStreamId: number;
+  holders: { address: `0x${string}`; balance: string }[];
+  totalTransfers: number;
 }
 
 export const useAltarEvents = () => {
@@ -161,6 +163,48 @@ export const useAltarEvents = () => {
                 console.log("No liquidity pair found for token:", blesToken);
               }
 
+              // Get Transfer events for the BLES token
+              const transferEvents = await publicClient.getLogs({
+                address: blesToken,
+                event: {
+                  name: 'Transfer',
+                  type: 'event',
+                  inputs: [
+                    { indexed: true, name: 'from', type: 'address' },
+                    { indexed: true, name: 'to', type: 'address' },
+                    { indexed: false, name: 'value', type: 'uint256' }
+                  ]
+                },
+                fromBlock: fromBlock
+              });
+
+              // Track balances
+              const holderBalances = new Map<string, bigint>();
+              
+              for (const event of transferEvents) {
+                const from = event.args.from as `0x${string}`;
+                const to = event.args.to as `0x${string}`;
+                const value = event.args.value as bigint;
+                
+                if (from !== '0x0000000000000000000000000000000000000000') {
+                  const fromBalance = holderBalances.get(from) || 0n;
+                  holderBalances.set(from, fromBalance - value);
+                }
+                
+                const toBalance = holderBalances.get(to) || 0n;
+                holderBalances.set(to, toBalance + value);
+              }
+
+              // Filter out zero balances and format
+              const holders = Array.from(holderBalances.entries())
+                .filter(([_, balance]) => balance > 0n)
+                .map(([address, balance]) => ({
+                  address: address as `0x${string}`,
+                  balance: formatEther(balance)
+                }))
+                .sort((a, b) => Number(b.balance) - Number(a.balance))
+                .slice(0, 10); // Top 10 holders
+
               return {
                 address: blesed,
                 blesAddress: blesToken,
@@ -172,6 +216,8 @@ export const useAltarEvents = () => {
                 price,
                 priceImpact,
                 pairStreamId,
+                holders,
+                totalTransfers: transferEvents.length,
               } as CallerBalance;
             } catch (error) {
               console.error("Error processing event:", { event, error });
