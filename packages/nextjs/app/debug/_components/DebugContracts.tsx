@@ -6,11 +6,13 @@ import { BarsArrowUpIcon } from "@heroicons/react/20/solid";
 import { ContractUI } from "~~/app/debug/_components/contract";
 import { ContractName, GenericContract } from "~~/utils/scaffold-eth/contract";
 import { useAllContracts } from "~~/utils/scaffold-eth/contractsData";
+import { useTargetNetwork } from "~~/hooks/scaffold-eth";
 
 const selectedContractStorageKey = "scaffoldEth2.selectedContract";
 
 export function DebugContracts() {
-  const contractsData = useAllContracts();
+  const { targetNetwork } = useTargetNetwork();
+  const contractsData = useAllContracts(targetNetwork.id);
   const contractNames = useMemo(
     () =>
       Object.keys(contractsData).sort((a, b) => {

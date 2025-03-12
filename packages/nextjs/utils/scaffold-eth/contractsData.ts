@@ -3,9 +3,9 @@ import { GenericContractsDeclaration, contracts } from "~~/utils/scaffold-eth/co
 
 const DEFAULT_ALL_CONTRACTS: GenericContractsDeclaration[number] = {};
 
-export function useAllContracts() {
-  const { targetNetwork } = useTargetNetwork();
-  const contractsData = contracts?.[targetNetwork.id];
+export function useAllContracts(chainId: number) {
+  // const { targetNetwork } = useTargetNetwork();
+  const contractsData = contracts?.[chainId];
   // using constant to avoid creating a new object on every call
   return contractsData || DEFAULT_ALL_CONTRACTS;
 }

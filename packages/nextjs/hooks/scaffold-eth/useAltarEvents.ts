@@ -27,21 +27,20 @@ export interface CallerBalance {
 export const useAltarEvents = () => {
   const [balances, setBalances] = useState<CallerBalance[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const publicClient = usePublicClient();
-  const { targetNetwork } = useTargetNetwork();
-  const contractsData = useAllContracts();
+  const publicClient = usePublicClient({chainId: 11155111});
+  const contractsData = useAllContracts(11155111);
   const uniswapV2FactoryContract = contractsData.UniswapV2Factory;
   const wethContract = contractsData.WETH;
   const torchContract = contractsData.TORCH;
 
 
-  const fromBlock = targetNetwork.id === 11155111 ? BigInt(7589485) : BigInt(21599730);
+  const fromBlock = BigInt(7589485) 
+  // BigInt(21599730);
   const { data: events, isLoading: isLoadingEvents } = useScaffoldEventHistory({
     contractName: "Altar",
     eventName: "Blesed",
     fromBlock: fromBlock,
-    chainId: targetNetwork.id as AllowedChainIds,
-    // watch: true,
+    chainId: 11155111,
   });
 
   console.log("Events from useScaffoldEventHistory:", {
@@ -103,7 +102,6 @@ export const useAltarEvents = () => {
             const blesToken = event.args.blesToken as `0x${string}`;
             const pairStreamId = event.args.streamId ? Number(event.args.streamId) : 0;
             try {
-              // Get basic balances first
               const [ethBalance, blesBalance, torchBalance] = await Promise.all([
                 publicClient.getBalance({ address: blesed }),
                 publicClient.readContract({
@@ -120,7 +118,6 @@ export const useAltarEvents = () => {
                 }) as Promise<bigint>,
               ]);
 
-              // Try to get pair info, but don't fail if it doesn't exist
               let price = 0;
               let priceImpact = 0;
               let reserve0 = 0;
@@ -163,7 +160,6 @@ export const useAltarEvents = () => {
                 console.log("No liquidity pair found for token:", blesToken);
               }
 
-              // Get Transfer events for the BLES token
               const transferEvents = await publicClient.getLogs({
                 address: blesToken,
                 event: {
@@ -178,7 +174,6 @@ export const useAltarEvents = () => {
                 fromBlock: fromBlock
               });
 
-              // Track balances
               const holderBalances = new Map<string, bigint>();
               
               for (const event of transferEvents) {
@@ -195,7 +190,6 @@ export const useAltarEvents = () => {
                 holderBalances.set(to, toBalance + value);
               }
 
-              // Filter out zero balances and format
               const holders = Array.from(holderBalances.entries())
                 .filter(([_, balance]) => balance > 0n)
                 .map(([address, balance]) => ({

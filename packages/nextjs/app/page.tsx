@@ -1,25 +1,23 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { AltarTable } from "./_components/AltarTable";
 import { SparkForm } from "./_components/SparkForm";
 import { Address } from "~~/components/scaffold-eth";
 import { useAltarEvents } from "~~/hooks/scaffold-eth/useAltarEvents";
-import { useDeployedContractInfo, useTargetNetwork } from "~~/hooks/scaffold-eth";
-import { AllowedChainIds } from "~~/utils/scaffold-eth";
+import { useDeployedContractInfo } from "~~/hooks/scaffold-eth";
 import { useAccount } from 'wagmi';
 import { Dashboard } from "./_components/Dashboard";
 import { NextPage } from "next";
 
 const Home: NextPage = () => {
   const { address } = useAccount();
-  const { targetNetwork } = useTargetNetwork();
   const { data: altarContract } = useDeployedContractInfo({
-    contractName: "Altar"
+    contractName: "Altar",
+    chainId: 11155111
   });
   const { balances, isLoading } = useAltarEvents();
   
-  // Add this hook to check if user has called Spark
+  console.log("altarContract",altarContract);
   const hasCalledSpark = balances.some(b => b.address === address);
 
   const introText = `
@@ -60,7 +58,6 @@ Getting Started
               <Dashboard 
                 address={address} 
                 accountData={balances.find(b => b.address === address)}
-                targetNetwork={targetNetwork}
               />
             ) : (
               <SparkForm />

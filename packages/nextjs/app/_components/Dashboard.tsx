@@ -12,25 +12,29 @@ import { ChainWithAttributes } from "~~/utils/scaffold-eth";
 import { useDisplayUsdMode } from "~~/hooks/scaffold-eth/useDisplayUsdMode";
 import { useGlobalState } from "~~/services/store/store";
 import { SendModal } from "./SendModal";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { BridgeModal } from "./BridgeModal";
+import { NETWORK_CONFIGS } from "./BridgeModal";
+import { parseAbiItem, decodeEventLog, parseEther } from "viem";
+import { createPublicClient, http } from "viem";
+import { erc20Abi } from "viem";
+import { optimismSepolia, baseSepolia } from "viem/chains";
+import { usePublicClient } from "wagmi";
+import scaffoldConfig from "~~/scaffold.config";
 
 interface DashboardProps {
   address: string;
   accountData?: CallerBalance;
-  targetNetwork: ChainWithAttributes;
 }
 
-// Helper function for consistent number formatting
 const formatNumber = (num: number | string) => {
   return Number(num).toFixed(9);
 };
 
-// Add the same calculation helper
 const calculateMarketCap = (price: number | string, totalSupply: number | string) => {
   return Number(price) * Number(totalSupply);
 };
 
-// First, add a styled wrapper for the amount display
 const AmountDisplay = ({ amount, onSend }: { amount: string | number, onSend: () => void }) => {
   return (
     <div className="group relative inline-flex items-center gap-2">
@@ -45,17 +49,33 @@ const AmountDisplay = ({ amount, onSend }: { amount: string | number, onSend: ()
   );
 };
 
-export const Dashboard = ({ address, accountData, targetNetwork }: DashboardProps) => {
+const formatL2Balance = (balance: bigint | undefined) => {
+  if (!balance) return "0.000000000";
+  return formatNumber(Number(balance) / 1e18);
+};
+
+const L2_RPC = {
+  optimism: `https://opt-sepolia.g.alchemy.com/v2/${scaffoldConfig.alchemyApiKey}`,
+  base: `https://base-sepolia.g.alchemy.com/v2/${scaffoldConfig.alchemyApiKey}`
+};
+
+export const Dashboard = ({ address, accountData }: DashboardProps) => {
   const { displayUsdMode, toggleDisplayUsdMode } = useDisplayUsdMode({});
+  const blesAddress = accountData?.blesAddress;
   const nativeCurrencyPrice = useGlobalState(state => state.nativeCurrency.price);
   const [isSendModalOpen, setIsSendModalOpen] = useState(false);
+  const [isBridgeModalOpen, setBridgeModalOpen] = useState(false);
+  const [bridgeModalNetwork, setBridgeModalNetwork] = useState<keyof typeof NETWORK_CONFIGS | null>(null);
+  const [l2Tokens, setL2Tokens] = useState<Record<string, `0x${string}`>>({});
+  const [isLoading, setIsLoading] = useState(true);
+  const [l2Balances, setL2Balances] = useState<Record<string, bigint>>({});
+  const publicClient = usePublicClient(); 
+  const { bridge: { deployedL2Addresses }, setBridgeL2Address } = useGlobalState();
 
-  // Add helper for USD conversion
   const formatUsdValue = (ethValue: number | string) => {
-    return formatNumber(Number(ethValue) * nativeCurrencyPrice);
+    return (Number(ethValue) * nativeCurrencyPrice).toFixed(2);
   };
 
-  // Add PriceDisplay component
   const PriceDisplay = ({ ethValue }: { ethValue: number | string }) => (
     <span className="font-mono cursor-pointer" onClick={toggleDisplayUsdMode}>
       {displayUsdMode 
@@ -63,6 +83,107 @@ export const Dashboard = ({ address, accountData, targetNetwork }: DashboardProp
         : `${formatNumber(ethValue)} ETH`}
     </span>
   );
+
+  const renderBridgeButton = (network: keyof typeof NETWORK_CONFIGS) => (
+    <div className="flex items-center gap-2">
+      <button
+        className="p-1 hover:bg-base-200 rounded-full transition-colors"
+        onClick={() => setBridgeModalNetwork(network)}
+      >
+        <ArrowsRightLeftIcon className="h-4 w-4" />
+      </button>
+      {NETWORK_CONFIGS[network].name}
+    </div>
+  );
+
+  useEffect(() => {
+    const checkBridgedTokens = async () => {
+      setIsLoading(true);
+      try {
+        if (!accountData) {
+          console.error("No account data available");
+          return;
+        }
+        console.log("Checking L2 tokens for:", accountData.blesAddress);
+        
+        for (const [network, config] of Object.entries(NETWORK_CONFIGS)) {
+          const l2Client = createPublicClient({
+            chain: network === 'optimism' ? optimismSepolia : baseSepolia,
+            transport: http(L2_RPC[network as keyof typeof L2_RPC])
+          });
+
+          const logs = await l2Client.getLogs({
+            address: config.factory,
+            event: parseAbiItem('event OptimismMintableERC20Created(address indexed localToken, address indexed remoteToken, address deployer)'),
+            args: {
+              remoteToken: accountData.blesAddress as `0x${string}`
+            },
+            fromBlock: 0n,
+            toBlock: 'latest'
+          });
+
+          console.log(`Found ${logs.length} logs for ${network}`);
+          console.log("Logs:", logs);
+
+          if (logs.length > 0) {
+            const lastLog = logs[logs.length - 1];
+            setBridgeL2Address(network, lastLog.args.localToken as `0x${string}`);
+          }
+        }
+      } catch (error) {
+        console.error("Error checking L2 tokens:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (address && accountData?.blesAddress) {
+      checkBridgedTokens();
+    }
+  }, [address, accountData?.blesAddress, setBridgeL2Address]);
+
+  useEffect(() => {
+    const getL2Balances = async () => {
+      try {
+        const l2Clients = {
+          optimism: createPublicClient({
+            chain: optimismSepolia,
+            transport: http(L2_RPC.optimism)
+          }),
+          base: createPublicClient({
+            chain: baseSepolia,
+            transport: http(L2_RPC.base)
+          }),
+        };
+
+        for (const [network, tokenAddress] of Object.entries(deployedL2Addresses)) {
+          if (tokenAddress && address) {
+            const balance = await l2Clients[network as keyof typeof l2Clients].readContract({
+              address: tokenAddress,
+              abi: erc20Abi,
+              functionName: 'balanceOf',
+              args: [address]
+            });
+
+            setL2Balances(prev => ({
+              ...prev,
+              [network]: balance
+            }));
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching L2 balances:", error);
+      }
+    };
+
+    if (Object.keys(deployedL2Addresses).length > 0 && address) {
+      getL2Balances();
+    }
+  }, [deployedL2Addresses, address]);
+
+  if (isLoading) {
+    return <div>Checking bridge history...</div>;
+  }
 
   if (!accountData) return <div>No account data available</div>;
 
@@ -95,39 +216,13 @@ export const Dashboard = ({ address, accountData, targetNetwork }: DashboardProp
                 >
                   UniswapV3
                 </a>
-                {/* <button 
-                  onClick={() => window.open(`https://app.uniswap.org/#/swap?outputCurrency=${accountData.blesAddress}`, '_blank')}
-                  className="btn btn-xs btn-primary w-16"
-                >
-                  BUY
-                </button> */}
               </div>
-            </th>
-            <th className="text-left font-medium w-1/6">
-              <a
-                href="https://ajna.finance/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:underline cursor-pointer"
-              >
-                Ajna
-              </a>
             </th>
           </tr>
         </thead>
         <tbody>
           <tr className="border-b border-base-200">
-            <td className="py-3">
-              <div className="flex items-center gap-2">
-                <button
-                  className="p-1 hover:bg-base-200 rounded-full transition-colors"
-                  onClick={() => console.log('Bridge to Ethereum')}
-                >
-                  <ArrowsRightLeftIcon className="h-4 w-4" />
-                </button>
-                Sepolia
-              </div>
-            </td>
+            <td className="py-3">Sepolia</td>
             <td className="py-3 font-mono flex items-center gap-1">
               <AmountDisplay 
                 amount={accountData.blesBalance} 
@@ -162,20 +257,12 @@ export const Dashboard = ({ address, accountData, targetNetwork }: DashboardProp
           </tr>
           <tr className="border-b border-base-200">
             <td className="py-3">
-              <div className="flex items-center gap-2">
-                <button
-                  className="p-1 hover:bg-base-200 rounded-full transition-colors"
-                  onClick={() => console.log('Bridge to Optimism')}
-                >
-                  <ArrowsRightLeftIcon className="h-4 w-4" />
-                </button>
-                Optimism
-              </div>
+              {renderBridgeButton("optimism")}
             </td>
             <td className="py-3 font-mono flex items-center gap-1">
-              <div>{formatNumber(0)}</div>
+              <div>{formatL2Balance(l2Balances.optimism)}</div>
               <a
-                href="https://optimistic.etherscan.io/address/0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599"
+                href={`${NETWORK_CONFIGS.optimism.explorerUrl}/address/${deployedL2Addresses.optimism || ''}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hover:underline text-primary"
@@ -189,20 +276,12 @@ export const Dashboard = ({ address, accountData, targetNetwork }: DashboardProp
           </tr>
           <tr className="border-b border-base-200">
             <td className="py-3">
-              <div className="flex items-center gap-2">
-                <button
-                  className="p-1 hover:bg-base-200 rounded-full transition-colors"
-                  onClick={() => console.log('Bridge to Base')}
-                >
-                  <ArrowsRightLeftIcon className="h-4 w-4" />
-                </button>
-                Base
-              </div>
+              {renderBridgeButton("base")}
             </td>
             <td className="py-3 font-mono flex items-center gap-1">
-              <div>{formatNumber(0)}</div>
-              <a
-                href="https://base.blockscout.com/address/0x4200000000000000000000000000000000000006"
+              <div>{formatNumber(Number(l2Balances.base || 0n))}</div>
+              <a          
+                href={`${NETWORK_CONFIGS.base.explorerUrl}/address/${deployedL2Addresses.base || ''}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hover:underline text-primary"
@@ -211,23 +290,13 @@ export const Dashboard = ({ address, accountData, targetNetwork }: DashboardProp
               </a>
             </td>
             <td className="py-3">-</td>
-            <td className="py-3">-</td>
-            <td className="py-3">-</td>
           </tr>
           <tr className="border-b border-base-200">
             <td className="py-3">
-              <div className="flex items-center gap-2">
-                <button
-                  className="p-1 hover:bg-base-200 rounded-full transition-colors"
-                  onClick={() => console.log('Bridge to Scroll')}
-                >
-                  <ArrowsRightLeftIcon className="h-4 w-4" />
-                </button>
-                Scroll
-              </div>
+              {renderBridgeButton("scroll")}
             </td>
             <td className="py-3 font-mono flex items-center gap-1">
-              <div>{formatNumber(0)}</div>
+              <div>{formatNumber(Number(l2Balances.scroll || 0n))}</div>
               <a
                 href="https://scrollscan.com/address/0x5300000000000000000000000000000000000004"
                 target="_blank"
@@ -240,34 +309,7 @@ export const Dashboard = ({ address, accountData, targetNetwork }: DashboardProp
             <td className="py-3">-</td>
             <td className="py-3">-</td>
             <td className="py-3">-</td>
-          </tr>
-          <tr className="border-b border-base-200">
-            <td className="py-3">
-              <div className="flex items-center gap-2">
-                <button
-                  className="p-1 hover:bg-base-200 rounded-full transition-colors"
-                  onClick={() => console.log('Bridge to Move')}
-                >
-                  <ArrowsRightLeftIcon className="h-4 w-4" />
-                </button>
-                Move
-              </div>
-            </td>
-            <td className="py-3 font-mono flex gap-1">
-              <div>{formatNumber(0)}</div>
-              <a
-                href="https://move.blockscout.com/address/0x6c00000000000000000000000000000000000005"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:underline text-primary"
-              >
-                BLES
-              </a>
-            </td>
-            <td className="py-3">-</td>
-            <td className="py-3">-</td>
-            <td className="py-3">-</td>
-          </tr>
+          </tr>         
         </tbody>
       </table>
 
@@ -340,7 +382,7 @@ export const Dashboard = ({ address, accountData, targetNetwork }: DashboardProp
         </button>
         <button
           className="btn btn-sm w-32 btn-outline"
-          onClick={() => window.open(`https://app.sablier.com/vesting/stream/LL3-${targetNetwork.id}-${accountData.pairStreamId}/`, '_blank')}
+          onClick={() => window.open(`https://app.sablier.com/vesting/stream/LL3-${11155111}-${accountData.pairStreamId}/`, '_blank')}
         >
           Manage Liquidity
         </button>
@@ -352,10 +394,19 @@ export const Dashboard = ({ address, accountData, targetNetwork }: DashboardProp
         onClose={() => setIsSendModalOpen(false)}
         onSend={(toAddress, amount) => {
           console.log('Sending', amount, 'BLES to', toAddress);
-          // Add your send logic here
         }}
         blesAddress={accountData.blesAddress}
       />
+
+      {bridgeModalNetwork && (
+        <BridgeModal 
+          isOpen={!!bridgeModalNetwork}
+          onClose={() => setBridgeModalNetwork(null)}
+          blesAddress={accountData.blesAddress}
+          network={bridgeModalNetwork}
+          l2TokenAddress={deployedL2Addresses[bridgeModalNetwork]}
+        />
+      )}
     </div>
   );
 }; 

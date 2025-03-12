@@ -133,7 +133,7 @@ export const AltarTable = ({ balances, connectedAddress, isLoading }: AltarTable
                               Balancer
                             </a>
                           </th>
-                          <th className="text-left font-medium">
+                          {/* <th className="text-left font-medium">
                             <a 
                               href="https://ajna.finance/" 
                               target="_blank"
@@ -142,7 +142,7 @@ export const AltarTable = ({ balances, connectedAddress, isLoading }: AltarTable
                             >
                               Ajna
                             </a>
-                          </th>
+                          </th> */}
                         </tr>
                       </thead>
                       <tbody>
