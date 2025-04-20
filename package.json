@@ -46,11 +46,20 @@
     "verify": "yarn foundry:verify"
   },
   "devDependencies": {
+    "@nomicfoundation/hardhat-verify": "^2.0.13",
+    "@nomiclabs/hardhat-etherscan": "^3.1.8",
+    "hardhat": "^2.22.19",
     "husky": "~8.0.3",
     "lint-staged": "~13.2.2"
   },
   "packageManager": "yarn@3.2.3",
   "engines": {
     "node": ">=18.18.0"
+  },
+  "dependencies": {
+    "ethers": "5.8.0"
+  },
+  "resolutions": {
+    "ethers": "5.8.0"
   }
 }
