@@ -11,7 +11,7 @@ export async function GET(
       return NextResponse.json({ error: "Invalid address format" }, { status: 400 });
     }
     
-    const indexerApiUrl = process.env.INDEXER_API_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002/api';
+    const indexerApiUrl = process.env.INDEXER_API_URL || process.env.NEXT_PUBLIC_API_URL || 'https://134-209-152-255.sslip.io/api';
     
     const response = await fetch(`${indexerApiUrl}/superbles/${address}`);
     
