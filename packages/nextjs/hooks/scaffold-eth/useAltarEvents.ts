@@ -59,8 +59,8 @@ export const useAltarEvents = () => {
       return;
     }
 
-    const fetchBalances = async () => {
-      try {
+  const fetchBalances = async () => {
+    try {
         setIsLoading(true);
         const factoryAddress = uniswapV2FactoryContract?.address;
         const wethAddress = wethContract?.address;
@@ -225,13 +225,13 @@ export const useAltarEvents = () => {
         );
         console.log("Valid balances:", validBalances);
         setBalances(validBalances);
-      } catch (error) {
+    } catch (error) {
         console.error("Error processing events:", error);
         notification.error("Failed to process events");
-      } finally {
-        setIsLoading(false);
-      }
-    };
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
     fetchBalances();
   }, [events, publicClient]);

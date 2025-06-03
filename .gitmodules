@@ -28,3 +28,18 @@
 [submodule "packages/foundry/lib/optimism"]
 	path = packages/foundry/lib/optimism
 	url = https://github.com/ethereum-optimism/optimism
+[submodule "packages/superbles/lib/forge-std"]
+	path = packages/superbles/lib/forge-std
+	url = https://github.com/foundry-rs/forge-std
+[submodule "packages/superbles/lib/openzeppelin-contracts"]
+	path = packages/superbles/lib/openzeppelin-contracts
+	url = https://github.com/OpenZeppelin/openzeppelin-contracts
+[submodule "packages/superbles/lib/solady"]
+	path = packages/superbles/lib/solady
+	url = https://github.com/Vectorized/solady
+[submodule "packages/superbles/lib/optimism"]
+	path = packages/superbles/lib/optimism
+	url = https://github.com/ethereum-optimism/optimism
+[submodule "supersim"]
+	path = supersim
+	url = https://github.com/ethereum-optimism/supersim.git

@@ -3,7 +3,7 @@ pragma solidity ^0.8.28;
 
 import {Script} from "forge-std/Script.sol";
 import {stdJson} from "forge-std/StdJson.sol";
-import {Altar} from "../src/Altar.sol";
+import {Altar} from "../contracts/Altar.sol";
 
 contract callSpark is Script {
     function run(

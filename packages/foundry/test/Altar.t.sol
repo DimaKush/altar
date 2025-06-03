@@ -3,7 +3,7 @@ pragma solidity ^0.8.28;
 import {Test} from "forge-std/Test.sol";
 import {console} from "forge-std/console.sol";
 import {Vm} from "forge-std/Vm.sol";
-import {Altar} from "../src/Altar.sol";
+import {Altar} from "../contracts/Altar.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {ISablierV2LockupLinear} from "@sablier/v2-core/src/interfaces/ISablierV2LockupLinear.sol";
 import {LockupLinear} from "@sablier/v2-core/src/types/DataTypes.sol";

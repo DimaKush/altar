@@ -1,0 +1,31 @@
+{
+  "version": 2,
+  "name": "altar-indexer-api",
+  "builds": [
+    {
+      "src": "src/api.ts",
+      "use": "@vercel/node",
+      "config": {
+        "includeFiles": ["src/**"]
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "/src/api.ts"
+    },
+    {
+      "src": "/health",
+      "dest": "/src/api.ts"
+    }
+  ],
+  "env": {
+    "NODE_ENV": "production"
+  },
+  "functions": {
+    "src/api.ts": {
+      "maxDuration": 30
+    }
+  }
+} 

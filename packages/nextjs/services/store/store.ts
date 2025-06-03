@@ -1,7 +1,14 @@
 import { create } from "zustand";
-import { NETWORK_CONFIGS } from "~~/app/_components/BridgeModal";
 import scaffoldConfig from "~~/scaffold.config";
 import { ChainWithAttributes } from "~~/utils/scaffold-eth";
+
+// Define network configs locally since BridgeModal doesn't exist
+const NETWORK_CONFIGS = {
+  "84532": { name: "Base Sepolia" }, // Base Sepolia
+  "11155111": { name: "Sepolia" }, // Ethereum Sepolia  
+  "1": { name: "Ethereum" }, // Ethereum Mainnet
+  "8453": { name: "Base" }, // Base Mainnet
+} as const;
 
 /**
  * Zustand Store

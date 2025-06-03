@@ -1,3 +1,4 @@
+import { defineChain } from "viem";
 import * as chains from "viem/chains";
 
 export type ScaffoldConfig = {
@@ -39,3 +40,45 @@ const scaffoldConfig = {
 } as const satisfies ScaffoldConfig;
 
 export default scaffoldConfig;
+
+export const localL1 = defineChain({
+  id: 900,
+  name: "Supersim L1",
+  network: "supersim-l1",
+  nativeCurrency: { name: "Ether", symbol: "ETH", decimals: 18 },
+  rpcUrls: {
+    default: { http: ["http://127.0.0.1:8545"] },
+    public: { http: ["http://127.0.0.1:8545"] },
+  },
+  blockExplorers: {
+    default: { name: "None", url: "" },
+  },
+});
+
+export const localL2A = defineChain({
+  id: 901,
+  name: "Supersim L2A",
+  network: "supersim-l2a",
+  nativeCurrency: { name: "Ether", symbol: "ETH", decimals: 18 },
+  rpcUrls: {
+    default: { http: ["http://127.0.0.1:9545"] },
+    public: { http: ["http://127.0.0.1:9545"] },
+  },
+  blockExplorers: {
+    default: { name: "None", url: "" },
+  },
+});
+
+export const localL2B = defineChain({
+  id: 902,
+  name: "Supersim L2B",
+  network: "supersim-l2b",
+  nativeCurrency: { name: "Ether", symbol: "ETH", decimals: 18 },
+  rpcUrls: {
+    default: { http: ["http://127.0.0.1:9546"] },
+    public: { http: ["http://127.0.0.1:9546"] },
+  },
+  blockExplorers: {
+    default: { name: "None", url: "" },
+  },
+});

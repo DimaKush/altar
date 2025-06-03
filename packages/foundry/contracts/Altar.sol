@@ -139,7 +139,7 @@ contract Altar {
     // 10:	   8130618755783347 ~   0.81%
     //
     // All remaining bles and eth are pooled and locked in UniswapV2Pool in case of nonzero division.
-
+    // TODO: Add superchain deployment in one tx
     // DYOR
     function spark(uint _division, address _referral) public payable lock once {
         SparkVars memory vars;

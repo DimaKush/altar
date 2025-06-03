@@ -16,7 +16,8 @@
     "lint": "make lint",
     "test": "forge test",
     "verify": "make verify RPC_URL=${1:-localhost}",
-    "verify-keystore": "make verify-keystore"
+    "verify-keystore": "make verify-keystore",
+    "script": "make script SCRIPT=${1} RPC_URL=${2:-localhost}"
   },
   "dependencies": {
     "dotenv": "~16.3.1",

@@ -3,7 +3,7 @@ pragma solidity ^0.8.19;
 
 import "./DeployHelpers.s.sol";
 import { DeployAltar } from "./DeployAltar.s.sol";
-import { DeployYourContract } from "./DeployYourContract.s.sol";
+// import { DeployYourContract } from "./DeployYourContract.s.sol";
 
 /**
  * @notice Main deployment script for all contracts

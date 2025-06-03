@@ -975,7 +975,7 @@ const deployedContracts = {
       deploymentScript: "Deploy.s.sol",
     },
     Altar: {
-      address: "0x5d3aa5c55388665e6dcb371c34decb7096cda221",
+      address: "0x648a383965e25dee13ff93fdd86535038ee0ba96",
       abi: [
         {
           type: "constructor",
@@ -1308,7 +1308,7 @@ const deployedContracts = {
         },
       ],
       inheritedFunctions: {},
-      deploymentFile: "run-1738077313.json",
+      deploymentFile: "run-1747294153.json",
       deploymentScript: "Deploy.s.sol",
     },
   },

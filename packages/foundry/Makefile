@@ -1,4 +1,4 @@
-.PHONY: build deploy generate-abis verify-keystore account chain compile flatten fork format lint test verify
+.PHONY: build deploy generate-abis verify-keystore account chain compile flatten fork format lint test verify script
 
 DEPLOY_SCRIPT ?= script/Deploy.s.sol
 
@@ -14,6 +14,10 @@ chain: setup-anvil-wallet
 # Start a fork
 fork: setup-anvil-wallet
 	anvil --fork-url ${FORK_URL} --chain-id 31337
+
+# Run a script
+script:
+	forge script ${SCRIPT} --rpc-url ${RPC_URL} --broadcast --legacy --ffi
 
 # Deploy the contracts
 deploy:

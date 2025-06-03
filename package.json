@@ -43,7 +43,11 @@
     "vercel": "yarn workspace @se-2/nextjs vercel",
     "vercel:login": "yarn workspace @se-2/nextjs vercel:login",
     "vercel:yolo": "yarn workspace @se-2/nextjs vercel:yolo",
-    "verify": "yarn foundry:verify"
+    "verify": "yarn foundry:verify",
+    "supersim:build": "docker build -t supersim:latest supersim",
+    "supersim": "docker run --rm -it --network host supersim:latest",
+    "supersim:fork": "docker run --rm -it --network host supersim:latest fork --chains=op,base,zora --interop.enabled --interop.autorelay ",
+    "foundry:script": "yarn workspace @se-2/foundry script"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-verify": "^2.0.13",
