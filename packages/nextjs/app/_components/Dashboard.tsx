@@ -23,6 +23,7 @@ import { getTargetNetworks } from "~~/utils/scaffold-eth/networks";
 import { TransferFromChainModal } from "./TransferFromChainModal";
 import { formatEther } from "viem";
 import { createPublicClient, http, Chain, PublicClient } from "viem";
+import { useSuperbles } from "~~/hooks/scaffold-eth/useSuperbles";
 
 interface DashboardProps {
   address: string;
@@ -85,18 +86,46 @@ const ERC20_ABI = [
 export const Dashboard = ({ address }: DashboardProps) => {
   const { displayUsdMode, toggleDisplayUsdMode } = useDisplayUsdMode({});
   const { balances, isLoading, error } = useDashboardData();
+  const { address: userAddress } = useAccount();
+  const [deployedSuperbles, setDeployedSuperbles] = useState<Record<string, string>>({});
+  const [l2Balances, setL2Balances] = useState<Record<string, string>>({});
+  const [isTransferModalOpen, setIsTransferModalOpen] = useState(false);
+  const [isSendModalOpen, setIsSendModalOpen] = useState(false);
+  const [selectedSourceChain, setSelectedSourceChain] = useState<number>(11155111);
+
   const accountData = balances.find(b => b.address === address);
   const nativeCurrencyPrice = useGlobalState(state => state.nativeCurrency.price);
-  const [isSendModalOpen, setIsSendModalOpen] = useState(false);
+  
+  // Use the new hook to fetch superbles directly from indexer
+  const { deployments, isLoading: isLoadingDeployments, error: superblesError, refetch } = useSuperbles(accountData?.blesAddress);
+
+  // Convert deployments to the format expected by the component
+  useEffect(() => {
+    if (deployments.length > 0) {
+      const mappedDeployments = deployments.reduce((acc: Record<string, string>, dep) => {
+        acc[dep.chain_id.toString()] = dep.l2_token;
+        return acc;
+      }, {});
+      
+      console.log('Mapped deployments from hook:', mappedDeployments);
+      setDeployedSuperbles(mappedDeployments);
+      
+      // Save to localStorage
+      localStorage.setItem('superbles_deployed_addresses', JSON.stringify(mappedDeployments));
+    } else {
+      // Try to load from localStorage if no deployments found
+      const cachedDeployments = getDeployedSuperbles();
+      if (Object.keys(cachedDeployments).length > 0) {
+        console.log('Using cached deployments from localStorage:', cachedDeployments);
+        setDeployedSuperbles(cachedDeployments);
+      }
+    }
+  }, [deployments]);
+
   const { bridge: { deployedL2Addresses }, setBridgeL2Address } = useGlobalState();
   const [isBridgeDeployModalOpen, setBridgeDeployModalOpen] = useState(false);
-  const [deployedSuperbles, setDeployedSuperbles] = useState<Record<string, string>>({});
   const targetNetworks = getTargetNetworks();
-  const [isTransferModalOpen, setIsTransferModalOpen] = useState(false);
-  const [selectedSourceChain, setSelectedSourceChain] = useState<number>(11155111); // Sepolia chainId
-  const { address: userAddress } = useAccount();
   const publicClient = usePublicClient();
-  const [l2Balances, setL2Balances] = useState<Record<string, string>>({});
 
   const formatUsdValue = (ethValue: number | string) => {
     return (Number(ethValue) * nativeCurrencyPrice).toFixed(2);
@@ -109,51 +138,6 @@ export const Dashboard = ({ address }: DashboardProps) => {
         : `${formatNumber(ethValue)} ETH`}
     </span>
   );
-
-  const fetchDeployedSuperbles = async () => {
-    if (!accountData?.blesAddress) return;
-    
-    console.log('Fetching deployed Superbles for', accountData.blesAddress);
-    
-    try {
-      // Try to load from localStorage first
-      const cachedDeployments = getDeployedSuperbles();
-      if (Object.keys(cachedDeployments).length > 0) {
-        console.log('Using cached deployments from localStorage:', cachedDeployments);
-        setDeployedSuperbles(cachedDeployments);
-      }
-      
-      // Then try to fetch from API
-      const response = await fetch(`/api/superbles/${accountData.blesAddress}`);
-      if (response.ok) {
-        const deployments = await response.json();
-        console.log('Received deployments:', deployments);
-        
-        if (!Array.isArray(deployments)) {
-          console.error('Expected array of deployments, got:', deployments);
-          return;
-        }
-        
-        const mappedDeployments = deployments.reduce((acc: Record<string, string>, dep: { chain_id: number, l2_token: string }) => {
-          acc[dep.chain_id.toString()] = dep.l2_token;
-          return acc;
-        }, {});
-        
-        console.log('Mapped deployments:', mappedDeployments);
-        
-        // Only update if we got new data
-        if (Object.keys(mappedDeployments).length > 0) {
-          setDeployedSuperbles(mappedDeployments);
-          localStorage.setItem('superbles_deployed_addresses', JSON.stringify(mappedDeployments));
-        }
-      } else {
-        console.warn('API returned non-OK status:', response.status);
-      }
-    } catch (error) {
-      console.warn('Failed to fetch deployed superbles:', error);
-      // No need to throw - we're already using cached data if available
-    }
-  };
 
   const fetchL2Balances = async () => {
     if (!userAddress) return;
@@ -188,10 +172,6 @@ export const Dashboard = ({ address }: DashboardProps) => {
     }
     setL2Balances(newBalances);
   };
-
-  useEffect(() => {
-    fetchDeployedSuperbles();
-  }, [accountData?.blesAddress]);
 
   useEffect(() => {
     if (Object.keys(deployedSuperbles).length > 0) {
@@ -498,7 +478,9 @@ export const Dashboard = ({ address }: DashboardProps) => {
           <button 
             className="btn btn-xs btn-outline ml-2"
             onClick={() => {
-              fetchDeployedSuperbles();
+              if (accountData?.blesAddress) {
+                refetch(accountData.blesAddress);
+              }
             }}
           >
             Refresh Deployments
