@@ -11,11 +11,20 @@ export async function GET(
       return NextResponse.json({ error: "Invalid address format" }, { status: 400 });
     }
     
-    const indexerApiUrl = process.env.INDEXER_API_URL || process.env.NEXT_PUBLIC_API_URL || 'https://134-209-152-255.sslip.io/api';
+    const indexerApiUrl = process.env.INDEXER_API_URL || process.env.NEXT_PUBLIC_API_URL;
     
-    const response = await fetch(`${indexerApiUrl}/superbles/${address}`);
+    if (!indexerApiUrl) {
+      console.error('INDEXER_API_URL not set');
+      return NextResponse.json({ error: "Indexer API URL not configured" }, { status: 500 });
+    }
+    
+    const fullUrl = `${indexerApiUrl}/superbles/${address}`;
+    console.log('Calling indexer at:', fullUrl);
+    
+    const response = await fetch(fullUrl);
     
     if (!response.ok) {
+      console.error(`Indexer API error: ${response.status} ${response.statusText}`);
       throw new Error(`Indexer API returned status ${response.status}`);
     }
     
