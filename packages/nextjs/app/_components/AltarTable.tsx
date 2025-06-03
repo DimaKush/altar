@@ -6,6 +6,7 @@ import { Address } from "~~/components/scaffold-eth";
 import { ShoppingCartIcon } from "@heroicons/react/24/outline";
 import { useDisplayUsdMode } from "~~/hooks/scaffold-eth/useDisplayUsdMode";
 import { useGlobalState } from "~~/services/store/store";
+import { useSuperbles } from "~~/hooks/scaffold-eth/useSuperbles";
 
 interface AltarTableProps {
   balances: CallerBalance[];
@@ -24,11 +25,47 @@ const CHAIN_CONFIGS = {
   "534351": { name: "Scroll Sepolia", isL2: true },
 } as const;
 
+const DeploymentStatus = ({ blesAddress }: { blesAddress: string }) => {
+  const { deployments, isLoading } = useSuperbles(blesAddress);
+  
+  // Create a map of deployed chains
+  const deployedChains = deployments.reduce((acc, deployment) => {
+    acc[deployment.chain_id.toString()] = deployment.l2_token;
+    return acc;
+  }, {} as Record<string, string>);
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col gap-1">
+        <span className="loading loading-dots loading-xs"></span>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col gap-1">
+      {Object.entries(CHAIN_CONFIGS).map(([chainId, config]) => {
+        const isDeployed = ('isL1' in config && config.isL1) || deployedChains[chainId];
+        
+        return (
+          <div key={chainId} className="flex items-center gap-2">
+            <span className="text-sm">{config.name}</span>
+            {isDeployed ? (
+              <span className="badge badge-success badge-xs">✓</span>
+            ) : (
+              <span className="badge badge-ghost badge-xs">-</span>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+};
+
 export const AltarTable = ({ balances, connectedAddress, isLoading }: AltarTableProps) => {
   const [sortBy, setSortBy] = useState<'price' | 'reserves' | 'holders'>('price');
   const { displayUsdMode, toggleDisplayUsdMode } = useDisplayUsdMode({});
   const nativeCurrencyPrice = useGlobalState(state => state.nativeCurrency.price);
-  const { bridge: { deployedL2Addresses } } = useGlobalState();
 
   const formatUsdValue = (ethValue: number | string) => {
     return formatNumber(Number(ethValue) * nativeCurrencyPrice);
@@ -41,27 +78,6 @@ export const AltarTable = ({ balances, connectedAddress, isLoading }: AltarTable
         : `${formatNumber(ethValue)} ETH`}
     </span>
   );
-
-  const DeploymentStatus = ({ blesAddress }: { blesAddress: string }) => {
-    return (
-      <div className="flex flex-col gap-1">
-        {Object.entries(CHAIN_CONFIGS).map(([chainId, config]) => {
-          const isDeployed = ('isL1' in config && config.isL1) || deployedL2Addresses[chainId];
-          
-          return (
-            <div key={chainId} className="flex items-center gap-2">
-              <span className="text-sm">{config.name}</span>
-              {isDeployed ? (
-                <span className="badge badge-success badge-xs">✓</span>
-              ) : (
-                <span className="badge badge-ghost badge-xs">-</span>
-              )}
-            </div>
-          );
-        })}
-      </div>
-    );
-  };
 
   // Filter out the connected address from the table
   const filteredBalances = balances
