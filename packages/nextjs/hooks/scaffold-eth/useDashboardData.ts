@@ -172,6 +172,12 @@ export const useDashboardData = (address?: string): DashboardData => {
 
   // Initial fetch
   useEffect(() => {
+    // Only proceed if we have an address (when called from connected components)
+    if (address !== undefined && !address) {
+      setIsLoading(false);
+      return;
+    }
+
     // Try to load from localStorage first
     const cached = localStorage.getItem('altarBalances');
     if (cached) {
@@ -182,13 +188,18 @@ export const useDashboardData = (address?: string): DashboardData => {
 
     // Then fetch fresh data
     fetchData();
-  }, []);
+  }, [address]); // Add address as dependency
 
   // Auto-refresh every 5 minutes
   useEffect(() => {
+    // Only setup auto-refresh if we actually fetched data initially
+    if (address !== undefined && !address) {
+      return;
+    }
+
     const interval = setInterval(fetchData, 5 * 60 * 1000);
     return () => clearInterval(interval);
-  }, []);
+  }, [address]); // Add address dependency
 
   return {
     balances,

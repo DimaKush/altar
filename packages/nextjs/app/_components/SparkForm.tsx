@@ -8,6 +8,10 @@ import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 import { InformationCircleIcon } from "@heroicons/react/24/outline";
 import { notification } from "~~/utils/scaffold-eth";
 
+interface SparkFormProps {
+  onSparkSuccess?: () => void;
+}
+
 const SEPOLIA_CHAIN_ID = 11155111;
 
 const getDivisionPercentage = (div: number) => {
@@ -15,7 +19,7 @@ const getDivisionPercentage = (div: number) => {
   return percentages[div];
 };
 
-export const SparkForm = () => {
+export const SparkForm = ({ onSparkSuccess }: SparkFormProps) => {
   const { address, chain } = useAccount();
   const { switchChain, isPending: isSwitchingNetwork } = useSwitchChain();
   const [division, setDivision] = useState<number>(0);
@@ -56,6 +60,9 @@ export const SparkForm = () => {
         args: [BigInt(division), referral || "0x0000000000000000000000000000000000000000"],
         value: parseEther(ethValue),
       });
+      
+      // Call success callback
+      onSparkSuccess?.();
     } catch (e) {
       console.error("Error spark:", e);
     }

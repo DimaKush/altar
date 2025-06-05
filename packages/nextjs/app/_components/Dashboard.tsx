@@ -92,6 +92,8 @@ export const Dashboard = ({ address }: DashboardProps) => {
   const [isTransferModalOpen, setIsTransferModalOpen] = useState(false);
   const [isSendModalOpen, setIsSendModalOpen] = useState(false);
   const [selectedSourceChain, setSelectedSourceChain] = useState<number>(11155111);
+  const [sendModalChainId, setSendModalChainId] = useState<number>(11155111);
+  const [sendModalTokenAddress, setSendModalTokenAddress] = useState<string>("");
 
   const accountData = balances.find(b => b.address === address);
   const nativeCurrencyPrice = useGlobalState(state => state.nativeCurrency.price);
@@ -229,7 +231,11 @@ export const Dashboard = ({ address }: DashboardProps) => {
             <td className="py-3 font-mono flex items-center gap-1">
               <AmountDisplay 
                 amount={accountData.blesBalance} 
-                onSend={() => setIsSendModalOpen(true)}
+                onSend={() => {
+                  setSendModalChainId(11155111); // Sepolia
+                  setSendModalTokenAddress(accountData.blesAddress);
+                  setIsSendModalOpen(true);
+                }}
               />
               <a
                 href={`https://sepolia.etherscan.io/address/${accountData.blesAddress}`}
@@ -282,7 +288,11 @@ export const Dashboard = ({ address }: DashboardProps) => {
                       <>
                         <AmountDisplay 
                           amount={l2Balances[network.id.toString()] || "0.000000000"}
-                          onSend={() => setIsSendModalOpen(true)}
+                          onSend={() => {
+                            setSendModalChainId(network.id);
+                            setSendModalTokenAddress(superblesAddress);
+                            setIsSendModalOpen(true);
+                          }}
                         />
                         <a
                           href={`${network.blockExplorers?.default?.url}/address/${superblesAddress}`}
@@ -382,7 +392,7 @@ export const Dashboard = ({ address }: DashboardProps) => {
         {accountData.holders.map((holder, idx) => (
           <div key={idx} className="flex items-center gap-2 text-sm">
             <Address address={holder.address} />
-            <span className="font-mono">{formatNumber(holder.balance)} BLES</span>
+            <span className="font-mono">{formatNumber(formatEther(BigInt(holder.balance)))} BLES</span>
           </div>
         ))}
       </div>
@@ -402,7 +412,11 @@ export const Dashboard = ({ address }: DashboardProps) => {
         </button>
         <button
           className="btn btn-sm w-full sm:w-32 btn-outline"
-          onClick={() => setIsSendModalOpen(true)}
+          onClick={() => {
+            setSendModalChainId(11155111); // Default to Sepolia
+            setSendModalTokenAddress(accountData.blesAddress);
+            setIsSendModalOpen(true);
+          }}
         >
           Send
         </button>
@@ -421,7 +435,8 @@ export const Dashboard = ({ address }: DashboardProps) => {
         onSend={(toAddress, amount) => {
           console.log('Sending', amount, 'BLES to', toAddress);
         }}
-        blesAddress={accountData.blesAddress}
+        blesAddress={sendModalTokenAddress as `0x${string}`}
+        chainId={sendModalChainId}
       />
 
       {/* {bridgeModalNetwork && (

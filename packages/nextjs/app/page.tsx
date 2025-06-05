@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { AltarTable } from "./_components/AltarTable";
 import { SparkForm } from "./_components/SparkForm";
 import { Address } from "~~/components/scaffold-eth";
@@ -11,17 +12,21 @@ import { NextPage } from "next";
 
 const Home: NextPage = () => {
   const { address } = useAccount();
+  const [hasSparkSuccess, setHasSparkSuccess] = useState(false);
   const { data: altarContract } = useDeployedContractInfo({
     contractName: "Altar",
     chainId: 11155111
   });
-  const { balances, isLoading } = useDashboardData();
+  
+  // Only fetch dashboard data when address is available
+  const { balances, isLoading } = useDashboardData(address);
   
   // console.log("altarContract",altarContract);
   // console.log("balances", balances);
   // console.log("address", address);
 
-  const hasCalledSpark = balances.some(b => b.address === address);
+  // Only check hasCalledSpark when address is available
+  const hasCalledSpark = address ? (balances.some(b => b.address === address) || hasSparkSuccess) : false;
 
   const introText = `
 Altar Protocol
@@ -80,7 +85,7 @@ TODO:
                 address={address} 
               />
             ) : (
-              <SparkForm />
+              <SparkForm onSparkSuccess={() => setHasSparkSuccess(true)} />
             )}
           </div>
         </div>

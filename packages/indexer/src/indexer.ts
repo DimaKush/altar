@@ -119,10 +119,39 @@ async function processBlock(blockNumber: bigint) {
       toBlock: blockNumber
     });
 
+    // Sort transfer logs by logIndex to ensure chronological order
+    transferLogs.sort((a, b) => {
+      if (a.blockNumber !== b.blockNumber) {
+        return Number(a.blockNumber) - Number(b.blockNumber);
+      }
+      if (a.transactionIndex !== b.transactionIndex) {
+        return a.transactionIndex - b.transactionIndex;
+      }
+      return a.logIndex - b.logIndex;
+    });
+
     for (const log of transferLogs) {
       const { from, to, value } = log.args;
       if (from && to && value) {
-        // Insert into holders table
+        logger.info('Processing Transfer', {
+          token: token.slice(0, 8) + '...',
+          from: from.slice(0, 8) + '...',
+          to: to.slice(0, 8) + '...',
+          value: value.toString(),
+          logIndex: log.logIndex,
+          txIndex: log.transactionIndex
+        });
+
+        // Update balances for both from and to addresses
+        
+        // Handle the 'to' address (receiving tokens)
+        const currentToBalance = await db.get(`
+          SELECT balance FROM holders 
+          WHERE address = ? AND bles_token = ?
+        `, [to, token]) as { balance: string } | undefined;
+        
+        const newToBalance = BigInt(currentToBalance?.balance || '0') + value;
+        
         await db.run(`
           INSERT INTO holders (
             address, bles_token, balance, updated_at
@@ -133,9 +162,40 @@ async function processBlock(blockNumber: bigint) {
         `, [
           to,
           token,
-          value.toString(),
+          newToBalance.toString(),
           Number(block.timestamp)
         ]);
+
+        // Handle the 'from' address (sending tokens), but only if it's not a mint (from != 0x0)
+        if (from !== '0x0000000000000000000000000000000000000000') {
+          const currentFromBalance = await db.get(`
+            SELECT balance FROM holders 
+            WHERE address = ? AND bles_token = ?
+          `, [from, token]) as { balance: string } | undefined;
+          
+          if (currentFromBalance) {
+            const newFromBalance = BigInt(currentFromBalance.balance) - value;
+            
+            // Only update if balance is positive, otherwise remove the holder
+            if (newFromBalance > 0n) {
+              await db.run(`
+                UPDATE holders 
+                SET balance = ?, updated_at = ?
+                WHERE address = ? AND bles_token = ?
+              `, [
+                newFromBalance.toString(),
+                Number(block.timestamp),
+                from,
+                token
+              ]);
+            } else {
+              await db.run(`
+                DELETE FROM holders 
+                WHERE address = ? AND bles_token = ?
+              `, [from, token]);
+            }
+          }
+        }
 
         // Update total_transfers count for blesTokens only
         if (token !== TORCH_ADDRESS) {

@@ -9,7 +9,7 @@ export const RefillButton = () => {
   return (
     <>
       <button 
-        className="btn btn-sm w-32 btn-outline" 
+        className="btn btn-sm w-full sm:w-32 btn-outline" 
         onClick={() => setIsOpen(true)}
       >
         Refill
